@@ -1,0 +1,4 @@
+com\smartface\keycloak\eventlistenerspi\CustomEventListenerProvider.class
+com\smartface\keycloak\eventlistenerspi\CustomEventListenerProviderFactory.class
+com\smartface\keycloak\eventlistenerspi\KeycloakEventRequest.class
+com\smartface\keycloak\eventlistenerspi\DatabaseUtil.class

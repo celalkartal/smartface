@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    service: keycloakpostgresql
+  name: keycloakpostgresql
+  namespace: default
+spec:
+  type: LoadBalancer #prod ortamında NodePort kullan. Minikube nedeniyle lokalde NodePort sorun olusturuyor.
+  ports:
+    - name: "live-port"
+      port: 5432
+      targetPort: 5432
+  selector:
+    service: keycloakpostgresql

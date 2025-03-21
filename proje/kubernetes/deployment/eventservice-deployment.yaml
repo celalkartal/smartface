@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eventservice
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: eventservice
+  template:
+    metadata:
+      labels:
+        app: eventservice
+    spec:
+      containers:
+      - name: eventservice
+        image: eventservice:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: SPRING_DATASOURCE_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: keycloak_database_user
+        - name: SPRING_DATASOURCE_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: keycloak_database_password
+        - name: KEYCLOAK_DATABASE_NAME
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: keycloak_database_name
+        - name: KEYCLOAK_DATABASE_PORT
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: keycloak_database_port2
+        - name: SPRING_DATASOURCE_URL
+          value: jdbc:postgresql://keycloakpostgresql:${KEYCLOAK_DATABASE_PORT}/$(KEYCLOAK_DATABASE_NAME)
+        - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+          value: "kafka:9092"
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT
+          value: "6379"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        readinessProbe: #Spring boot does not expose a separate endpoint for the startup probe. we could use the liveness probe for this use case as well. 
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+          initialDelaySeconds: 170
+          periodSeconds: 30
+          failureThreshold: 5
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+          initialDelaySeconds: 205
+          periodSeconds: 30
+          failureThreshold: 5

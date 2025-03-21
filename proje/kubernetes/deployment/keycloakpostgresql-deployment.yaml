@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    service: keycloakpostgresql
+  name: keycloakpostgresql
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: keycloakpostgresql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        service: keycloakpostgresql
+    spec:
+      containers:
+        - env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  key: keycloak_database_name
+                  name: postgresql-secret
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: keycloak_database_password
+                  name: postgresql-secret
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: keycloak_database_user
+                  name: postgresql-secret
+          image: docker.io/library/postgres:13
+          imagePullPolicy: IfNotPresent
+          name: keycloakpostgresql
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          volumeMounts:
+            - name: keycloakpostgresql-data
+              mountPath: /var/lib/postgresql/data
+            - name: postgresql-init-script
+              mountPath: /docker-entrypoint-initdb.d/
+      restartPolicy: Always
+      volumes:
+        - name: keycloakpostgresql-data
+          persistentVolumeClaim:
+            claimName: keycloakpostgresql-data
+        - name: postgresql-init-script
+          configMap:
+            name: postgresql-init-script
+            items:
+            - key: init.sql
+              path: init.sql

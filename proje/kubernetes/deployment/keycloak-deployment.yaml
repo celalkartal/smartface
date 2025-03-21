@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: default
+  labels:
+    app: keycloak
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      containers:
+      - name: keycloak
+        image: quay.io/keycloak/keycloak:24.0.4
+        args: ["start-dev"]
+        env:
+        - name: KEYCLOAK_ADMIN
+          value: "admin"
+        - name: KEYCLOAK_ADMIN_PASSWORD
+          value: "admin"
+        - name: POSTGRES_DB
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: keycloak_database_name
+        - name: POSTGRES_DB_PORT
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: keycloak_database_port2
+        - name: KC_DB_URL
+          value: jdbc:postgresql://keycloakpostgresql:5432/$(POSTGRES_DB)
+        - name: KC_DB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: keycloak_database_user
+        - name: KC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgresql-secret
+              key: keycloak_database_password
+        - name: KC_PROXY
+          value: "edge"
+        - name: KC_HEALTH_ENABLED
+          value: "true"
+        - name: KC_METRICS_ENABLED
+          value: "true"
+        - name: KC_HOSTNAME_STRICT_HTTPS
+          value: "true"
+        - name: KC_LOG_LEVEL
+          value: INFO
+        - name: KC_DB
+          value: postgres
+        - name: EVENTCONSUMERSERVICE_EVENT_URL
+          value: "http://eventservice:8081/api/keycloak/event"
+        ports:
+        - name: http
+          containerPort: 8080
+        resources:
+            limits:
+              memory: 512Mi
+              cpu: "1"
+            requests:
+              memory: 256Mi
+              cpu: "0.2"

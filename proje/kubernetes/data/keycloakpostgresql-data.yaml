@@ -1,0 +1,50 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: keycloakpostgresql-data-pv
+  namespace: default
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 100Mi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/psql"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    service: keycloakpostgresql-data
+  name: keycloakpostgresql-data
+  namespace: default
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloakpostgresql-init-script
+data:
+  init.sql: |
+    # smartface şemasını oluştur
+    CREATE SCHEMA IF NOT EXISTS smartface;
+    SET search_path TO smartface;
+    #keycloak_events tablosunu oluştur
+    CREATE TABLE IF NOT EXISTS keycloak_events (
+       ID SERIAL PRIMARY KEY,
+       INSER_DATE TIMESTAMP NOT NULL,
+       STATUS VARCHAR(20) NOT NULL CHECK (STATUS IN ('NEW', 'PROCESSED', 'FAILED')),
+       EVENT_ID VARCHAR(255) UNIQUE NOT NULL,
+       EVENT_TYPE  VARCHAR(255) NOT NULL,
+       EVENT_JSON VARCHAR(4000) NOT NULL
+       );

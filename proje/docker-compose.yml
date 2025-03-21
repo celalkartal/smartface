@@ -1,0 +1,13 @@
+version: '3.8'
+services:
+  keycloak:
+    build:
+      context: /eventlistenerspi
+      dockerfile: Dockerfile
+    image: quay.io/keycloak/keycloak:24.0.4
+
+  eventservice:
+    build:
+      context: /eventservice
+      dockerfile: Dockerfile
+    image: eventservice:latest
