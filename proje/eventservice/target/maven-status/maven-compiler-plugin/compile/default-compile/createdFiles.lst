@@ -1,8 +1,0 @@
-com\smartface\eventservice\model\request\KeycloakEventRequest.class
-com\smartface\eventservice\service\RedisLockService.class
-com\smartface\eventservice\model\entity\KeycloakEvent.class
-com\smartface\eventservice\repository\KeycloakEventRepository.class
-com\smartface\eventservice\service\KeycloakEventService.class
-com\smartface\eventservice\contoller\EventController.class
-com\smartface\eventservice\EventListenerApplication.class
-com\smartface\eventservice\config\KafkaConfig.class
