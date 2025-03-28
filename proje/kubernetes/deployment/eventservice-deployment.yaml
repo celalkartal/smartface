@@ -39,7 +39,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: postgresql-secret
-              key: keycloak_database_port2
+              key: keycloak_database_port
         - name: SPRING_DATASOURCE_URL
           value: jdbc:postgresql://keycloakpostgresql:${KEYCLOAK_DATABASE_PORT}/$(KEYCLOAK_DATABASE_NAME)
         - name: SPRING_KAFKA_BOOTSTRAP_SERVERS

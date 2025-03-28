@@ -1,0 +1,10 @@
+proje/eventservice/target/*
+proje/eventservice/.classpath
+proje/eventservice/.factorypath
+proje/eventservice/.project
+proje/eventlistenerspi/target/*
+proje/eventlistenerspi/.classpath
+proje/eventlistenerspi/.factorypath
+proje/eventlistenerspi/.project
+proje/eventlistenerspi/.settings/*
+proje/eventservice/.settings/*

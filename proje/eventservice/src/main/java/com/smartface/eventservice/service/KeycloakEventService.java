@@ -29,9 +29,11 @@ public class KeycloakEventService {
 		try {
 
 			/**
-			 * Olayların sırasının bozulmasını engellemek icin, eger DB'de islenmeyen kayit
-			 * varsa önce db'den baslanmasi lazim bu nedenle batch ile hepsi temizlendikten
-			 * sonra dogrudan kafkaya aktarilecek.
+			 * In order to transfer events to Kafka in order,
+			 * if there are unprocessed event records in the DB, 
+			 * it is necessary to start from the DB first. 
+			 * Therefore, after all event records in the DB are processed with batch, 
+			 * new events will be transferred directly to Kafka.
 			 */
 
 			if (keycloakEventRepository.count() > 0L) {
@@ -39,7 +41,7 @@ public class KeycloakEventService {
 			} else {
 				saveEventToKafka(keycloakEventRequest.getEventJson());
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			log.error("KAFKA_EVENT_ERROR", e);
 			saveEventToDatabase(keycloakEventRequest);
 		}
@@ -86,12 +88,12 @@ public class KeycloakEventService {
 						saveEventToKafka(event.getEventJson());
 						keycloakEventRepository.delete(event);
 					} catch (Throwable t) {
-						log.error("Failed to process event: {}", event.getId(), t);
+						log.error("Failed to process event:"+ event.getId(), t);
 						break;
 					}
 				}
 			} catch (Throwable t) {
-				log.error("Failed to process events: {}", t);
+				log.error("Failed to process events", t);
 			} finally {
 				redisLockService.releaseLock(LOCK_KEY);
 			}

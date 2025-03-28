@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class RedisLockService {
 
     private static final String LOCK_PREFIX = "lock:";
+    private static final String LOCK_VALUE = "locked";
     private static final long LOCK_EXPIRE_TIME = 1000000; // 1000 seconds
 
     @Autowired
@@ -17,7 +18,7 @@ public class RedisLockService {
 
     public boolean getLock(String lockKey) {
         String key = LOCK_PREFIX + lockKey;
-        return redisTemplate.opsForValue().setIfAbsent(key, "locked", LOCK_EXPIRE_TIME, TimeUnit.MILLISECONDS);
+        return redisTemplate.opsForValue().setIfAbsent(key, LOCK_VALUE, LOCK_EXPIRE_TIME, TimeUnit.MILLISECONDS);
     }
 
     public void releaseLock(String lockKey) {

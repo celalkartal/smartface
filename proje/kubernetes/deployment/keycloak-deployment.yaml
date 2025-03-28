@@ -33,7 +33,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: postgresql-secret
-              key: keycloak_database_port2
+              key: keycloak_database_port
         - name: KC_DB_URL
           value: jdbc:postgresql://keycloakpostgresql:5432/$(POSTGRES_DB)
         - name: KC_DB_USERNAME

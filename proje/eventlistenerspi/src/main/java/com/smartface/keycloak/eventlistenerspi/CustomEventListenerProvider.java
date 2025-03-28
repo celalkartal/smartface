@@ -57,7 +57,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
 				saveEventOnError(request);
 			}
 		} catch (Throwable e) {
-			logger.log(Level.SEVERE, EVENTSERVICE_EVENT_URL + " erişimde sorun var!");
+			logger.log(Level.SEVERE, "An error occurred while accessing "+ EVENTSERVICE_EVENT_URL );
 			saveEventOnError(request);
 		}
 	}
@@ -85,7 +85,7 @@ public class CustomEventListenerProvider implements EventListenerProvider {
 				saveEventOnError(request);
 			}
 		} catch (Throwable e) {
-			logger.log(Level.SEVERE, EVENTSERVICE_EVENT_URL + " erişimde sorun var!");
+			logger.log(Level.SEVERE, "An error occurred while accessing "+ EVENTSERVICE_EVENT_URL );
 			saveEventOnError(request);
 		}
 
@@ -103,7 +103,8 @@ public class CustomEventListenerProvider implements EventListenerProvider {
 	 */
 	public void saveEventOnError(KeycloakEventRequest keycloakEventRequest) {
 		try (Connection conn = DatabaseUtil.getConnection()) {
-			String sql = "INSERT INTO smartface.keycloak_events (inser_date, status, event_id, event_type, event_json) "
+			String sql = "INSERT INTO smartface.keycloak_events "
+					+ "(inser_date, status, event_id, event_type, event_json) "
 					+ "VALUES (?, ?, ?, ?, ?)";
 			try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 				stmt.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
